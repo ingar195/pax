@@ -1,12 +1,5 @@
-
 from pycalima.Calima import Calima
 import logging
-import json
-
-
-def get_state(fan):
-    state = fan.getState()
-    return state
 
 
 def read_config(file="config.json"):
@@ -15,6 +8,29 @@ def read_config(file="config.json"):
         config = json.load(f)
     return config
 
+
+def get_state(fan):
+    state = fan.getState()
+    humidity = state[0]
+    light = state[1]
+    temp = state[2]
+    rpm = state[3]
+    mode = state[4]
+
+    state = {
+        "humidity": humidity,
+        "light": light,
+        "temp": temp,
+        "rpm": rpm,
+        "mode": mode
+    }
+    logging.info(f"humidity: {humidity}")
+    logging.info(f"light: {light}")
+    logging.info(f"temp: {temp}")
+    logging.info(f"rpm: {rpm}")
+    logging.info(f"mode: {mode}")
+
+    return state
 
 if __name__ == "__main__":
     logging.basicConfig(
@@ -29,20 +45,5 @@ if __name__ == "__main__":
     config = read_config()
     fan = Calima(config["mac"], config["pin"])
     state = get_state(fan)
-
-    logging.debug(f"State: {state}")
-    logging.debug(f"type: {type(state)}")
-
-    humidity = state[0]
-    light = state[1]
-    temp = state[2]
-    rpm = state[3]
-    mode = state[4]
-
-    logging.debug(f"Humidity: {humidity}")
-    logging.debug(f"Light: {light}")
-    logging.debug(f"Temp: {temp}")
-    logging.debug(f"RPM: {rpm}")
-    logging.debug(f"Mode: {mode}")
 
     fan.disconnect()
